@@ -39,5 +39,11 @@ namespace GlobalGrub.Controllers
 
             return View();
         }
+
+        // /Categories/Create
+        public IActionResult Create()
+        {
+            return View();
+        }
     }
 }
