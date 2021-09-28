@@ -10,12 +10,11 @@ namespace GlobalGrub.Models
     {
         // all pk fields in ASP.NET MVC should be called either {Model}Id or Id
         // property names should always use PascalCase
-
-        [Range(1, 999999)]
         [Display(Name = "Category Id")] // this sets an alias for all labels globally
         public int CategoryId { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "And no darn empty strings!")]
+        [MaxLength(100)]
         public string Name { get; set; }
 
         // child ref
