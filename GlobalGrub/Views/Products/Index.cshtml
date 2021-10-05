@@ -45,7 +45,14 @@
                 @Html.DisplayFor(modelItem => item.Category.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Photo)
+                @if (item.Photo != null)
+                {
+                    <img src="~/img/products/@item.Photo" alt="Product Photo" class="thumb" />
+                }
+                else
+                {
+                    <img src="~/img/products/placeholder.gif" alt="Product Photo" class="thumb" />
+                }
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
