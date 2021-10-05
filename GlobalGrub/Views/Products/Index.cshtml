@@ -1,31 +1,30 @@
 ﻿@model IEnumerable<GlobalGrub.Models.Product>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Products";
 }
 
-<h1>Index</h1>
+<h1>Products</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
+<table class="table sortable table-striped table-hover">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                <a href="#">Name</a>
+            </th>
+            <th align="center">
+                <a href="#">Price</a>
+            </th>
+            <th align="center">
+                <a href="#">Weight</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Price)
+                <a href="#">Category</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Weight)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Photo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Category)
             </th>
             <th></th>
         </tr>
@@ -36,17 +35,17 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
-            <td>
+            <td align="center">
                 @Html.DisplayFor(modelItem => item.Price)
             </td>
-            <td>
+            <td align="center">
                 @Html.DisplayFor(modelItem => item.Weight)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Photo)
+                @Html.DisplayFor(modelItem => item.Category.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Category.Name)
+                @Html.DisplayFor(modelItem => item.Photo)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
