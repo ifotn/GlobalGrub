@@ -67,23 +67,7 @@ namespace GlobalGrub.Controllers
                 // check for photo upload and save file if any
                 if (Photo != null)
                 {
-                    // get temp location of uploaded photo
-                    var filePath = Path.GetTempFileName();
-
-                    // create a unique name so we don't overwrite any existing photos using the Guid class
-                    // Guid: Globally Unique Identifier - built-in MS class
-                    // eg. photo.jpg => a1b2c3-photo.jpg
-                    var fileName = Guid.NewGuid() + "-" + Photo.FileName;
-
-                    // set destination path dynamically so it works on any system
-                    var uploadPath = System.IO.Directory.GetCurrentDirectory() + "\\wwwroot\\img\\products\\" + fileName;
-
-                    // actually execute the file copy now
-                    using (var stream = new FileStream(uploadPath, FileMode.Create))
-                    {
-                        await Photo.CopyToAsync(stream);
-                    }
-
+                    var fileName = UploadPhoto(Photo);
                     // set the Photo property name of the new Product object
                     product.Photo = fileName;
                 }
@@ -94,6 +78,28 @@ namespace GlobalGrub.Controllers
             }
             ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "Name", product.CategoryId);
             return View(product);
+        }
+
+        private static string UploadPhoto(IFormFile Photo)
+        {
+            // get temp location of uploaded photo
+            var filePath = Path.GetTempFileName();
+
+            // create a unique name so we don't overwrite any existing photos using the Guid class
+            // Guid: Globally Unique Identifier - built-in MS class
+            // eg. photo.jpg => a1b2c3-photo.jpg
+            var fileName = Guid.NewGuid() + "-" + Photo.FileName;
+
+            // set destination path dynamically so it works on any system
+            var uploadPath = System.IO.Directory.GetCurrentDirectory() + "\\wwwroot\\img\\products\\" + fileName;
+
+            // actually execute the file copy now
+            using (var stream = new FileStream(uploadPath, FileMode.Create))
+            {
+                Photo.CopyTo(stream);
+            }
+
+            return fileName;
         }
 
         // GET: Products/Edit/5
@@ -118,7 +124,7 @@ namespace GlobalGrub.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Name,Price,Weight,CategoryId,Photo")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Name,Price,Weight,CategoryId")] Product product, IFormFile Photo)
         {
             if (id != product.ProductId)
             {
@@ -129,6 +135,13 @@ namespace GlobalGrub.Controllers
             {
                 try
                 {
+                    // upload photo if any 
+                    if (Photo != null)
+                    {
+                        var fileName = UploadPhoto(Photo);
+                        product.Photo = fileName;
+                    }
+
                     _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
