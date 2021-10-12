@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GlobalGrub.Data;
 using GlobalGrub.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GlobalGrub.Controllers
 {
+    [Authorize]
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -26,6 +28,7 @@ namespace GlobalGrub.Controllers
         }
 
         // GET: Categories/Details/5
+        [AllowAnonymous] // make just this method public
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
