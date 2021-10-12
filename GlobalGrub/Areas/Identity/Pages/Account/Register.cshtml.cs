@@ -79,7 +79,7 @@ namespace GlobalGrub.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     // add any new users automatically to the role of Customer => new record in AspNetUserRoles
-                    var result1 = _userManager.AddToRoleAsync(user, "Customer");
+                    var result1 = await _userManager.AddToRoleAsync(user, "Customer");
 
                     _logger.LogInformation("User created a new account with password.");
 
