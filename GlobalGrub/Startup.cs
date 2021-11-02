@@ -36,6 +36,18 @@ namespace GlobalGrub
                 .AddRoles<IdentityRole>() // now enable Role Management for Authorization - not on by default
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
+
+            // enable Google Auth
+            services.AddAuthentication()
+                .AddGoogle(options =>
+                {
+                    // access Google Auth section of appsettings.json
+                    IConfigurationSection googleAuth = Configuration.GetSection("Authentication:Google");
+
+                    // read Google API Key values from config section and set as options
+                    options.ClientId = googleAuth["ClientId"];
+                    options.ClientSecret = googleAuth["ClientSecret"];
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
