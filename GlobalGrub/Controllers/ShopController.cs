@@ -1,4 +1,6 @@
 ﻿using GlobalGrub.Data;
+using GlobalGrub.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -40,5 +42,72 @@ namespace GlobalGrub.Controllers
             return View(products);
         }
 
+        // POST: /Shop/AddToCart
+        [HttpPost]
+        public IActionResult AddToCart(int ProductId, int Quantity) 
+        {
+            // look up price
+            var product = _context.Products.Find(ProductId);
+            var price = product.Price;
+
+            // set UserId of cart item
+            var userId = GetUserId();
+
+            // check if item already in user's cart. if so, update quantity instead
+            var cartItem = _context.CartItems
+                .SingleOrDefault(c => c.ProductId == ProductId && c.UserId == userId);
+
+            if (cartItem != null)
+            {
+                // update
+                cartItem.Quantity += Quantity;
+                _context.CartItems.Update(cartItem);
+            }
+            else
+            {
+                // insert
+                cartItem = new CartItem
+                {
+                    ProductId = ProductId,
+                    Quantity = Quantity,
+                    Price = (double)price,
+                    UserId = userId
+                };
+
+                // save to CartItems table in db
+                _context.CartItems.Add(cartItem);
+            }           
+
+            _context.SaveChanges();
+
+            // load cart page
+            return RedirectToAction("Cart"); 
+        }
+
+        private string GetUserId()
+        {
+            // check session for an existing UserId for this user's cart
+            if (HttpContext.Session.GetString("UserId") == null)
+            {
+                // this is user's 1st cart item
+                var userId = "";
+                if (User.Identity.IsAuthenticated)
+                {
+                    // user has logged in; use email 
+                    userId = User.Identity.Name;
+                }
+                else
+                {
+                    // user anonymous.  generate unique identifier
+                    userId = Guid.NewGuid().ToString();
+                    // or use this: userId = HttpContext.Session.Id;
+                }
+
+                // store userId in a session var
+                HttpContext.Session.SetString("UserId", userId);
+            }
+
+            return HttpContext.Session.GetString("UserId");
+        }
     }
 }
