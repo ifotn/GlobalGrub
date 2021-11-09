@@ -2,6 +2,7 @@
 using GlobalGrub.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -108,6 +109,29 @@ namespace GlobalGrub.Controllers
             }
 
             return HttpContext.Session.GetString("UserId");
+        }
+
+        // GET: /Shop/Cart
+        public IActionResult Cart()
+        {
+            // identity the user from the session var
+            var userId = HttpContext.Session.GetString("UserId");
+
+            // load the cart items for this user from the db for display
+            var cartItems = _context.CartItems
+                .Include(c => c.Product)
+                .Where(c => c.UserId == userId).ToList();
+
+            return View(cartItems);
+        }
+
+        // GET: /Shop/RemoveFromCart/5
+        public IActionResult RemoveFromCart(int id)
+        {
+            var cartItem = _context.CartItems.Find(id);
+            _context.CartItems.Remove(cartItem);
+            _context.SaveChanges();
+            return RedirectToAction("Cart");
         }
     }
 }

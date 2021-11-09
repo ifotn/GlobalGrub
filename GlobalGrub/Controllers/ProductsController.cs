@@ -126,7 +126,7 @@ namespace GlobalGrub.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Name,Price,Weight,CategoryId")] Product product, IFormFile Photo)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Name,Price,Weight,CategoryId")] Product product, IFormFile Photo, string CurrentPhoto)
         {
             if (id != product.ProductId)
             {
@@ -142,6 +142,11 @@ namespace GlobalGrub.Controllers
                     {
                         var fileName = UploadPhoto(Photo);
                         product.Photo = fileName;
+                    }
+                    else
+                    {
+                        // keep existing photo if no new one uploaded
+                        product.Photo = CurrentPhoto;
                     }
 
                     _context.Update(product);
