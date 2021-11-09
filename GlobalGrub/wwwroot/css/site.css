@@ -82,3 +82,8 @@ body {
 .navbar-dark, a.navbar-brand {
     background-color: #009688;
 }
+
+.input-small {
+    width: 75px;
+    margin-top: 7px;
+}

@@ -48,6 +48,18 @@ namespace GlobalGrub
                     options.ClientId = googleAuth["ClientId"];
                     options.ClientSecret = googleAuth["ClientSecret"];
                 });
+
+            // enable Facebook Auth
+            services.AddAuthentication()
+                .AddFacebook(options =>
+                {
+                    // access Facebook Auth section of appsettings.json
+                    IConfigurationSection facebookAuth = Configuration.GetSection("Authentication:Facebook");
+
+                    // read Facebook API Key values from config section and set as options
+                    options.AppId = facebookAuth["AppId"];
+                    options.AppSecret = facebookAuth["AppSecret"];
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
