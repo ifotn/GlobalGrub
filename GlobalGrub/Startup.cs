@@ -63,6 +63,9 @@ namespace GlobalGrub
 
             // session support
             services.AddSession();
+
+            // add dependency so controllers can read config values - used for Stripe keys in Shop
+            services.AddSingleton<IConfiguration>(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

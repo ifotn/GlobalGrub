@@ -1,0 +1,8 @@
+﻿@{ ViewData["Title"] = "Payment";
+}
+<script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
+<script src="https://js.stripe.com/v3/"></script>
+<h1>Continue to Payment</h1>
+<form action="/Shop/CreateCheckoutSession" method="POST">
+    <button type="submit" id="checkout-button" class="btn btn-primary">Next >></button>
+</form>

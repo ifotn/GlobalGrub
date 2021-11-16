@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Stripe;
+using Stripe.Checkout;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +19,14 @@ namespace GlobalGrub.Controllers
         // add DbContext to use the database
         private readonly ApplicationDbContext _context;
 
-        // constructor that takes an instance of our db connection
-        public ShopController(ApplicationDbContext context)
+        // add config var so we can read vals from appsettings
+        IConfiguration _iconfiguration;
+
+        // constructor that takes an instance of our db connection & an app configuration object
+        public ShopController(ApplicationDbContext context, IConfiguration configuration)
         {
             _context = context; // assign incoming db connection so we can use it in any method in this controller
+            _iconfiguration = configuration; // make config object available to all methods in this controller
         }
 
         // GET: /Shop
@@ -145,7 +152,7 @@ namespace GlobalGrub.Controllers
         // POST: /Shop/Checkout
         [Authorize]
         [HttpPost]
-        public IActionResult Checkout([Bind("FirstName,LastName,Address,City,Province,PostalCode,Phone")] Order order)
+        public IActionResult Checkout([Bind("FirstName,LastName,Address,City,Province,PostalCode,Phone")] Models.Order order)
         {
             // auto-fill total, date, user
             order.OrderDate = DateTime.Now;
@@ -159,6 +166,52 @@ namespace GlobalGrub.Controllers
             HttpContext.Session.SetObject("Order", order);
 
             return RedirectToAction("Payment");
+        }
+
+        // GET: /Shop/Payment
+        [Authorize]
+        public IActionResult Payment()
+        {
+            return View();
+        }
+
+        // POST: /Shop/CreateCheckoutSession
+        [Authorize]
+        [HttpPost]
+        public IActionResult CreateCheckoutSession()
+        {
+            // get order total
+            var order = HttpContext.Session.GetObject<Models.Order>("Order");
+
+            // set Stripe Secret Key
+            StripeConfiguration.ApiKey = _iconfiguration.GetSection("Stripe")["SecretKey"];
+
+            var options = new SessionCreateOptions
+            {
+              LineItems = new List<SessionLineItemOptions>
+                {
+                  new SessionLineItemOptions
+                  {
+                    // Provide the exact Price ID (e.g. pr_1234) of the product you want to sell in CENTS
+                    Price = (order.Total * 100).ToString(),
+                    Quantity = 1,
+                    Description = "GlobalGrub Purchase"
+                  },
+                },
+                PaymentMethodTypes = new List<string>
+                {
+                  "card"
+                },
+                Mode = "payment",
+                SuccessUrl = "https://" + Request.Host + "/Shop/SaveOrder",
+                CancelUrl = "https://" + Request.Host + "/Shop/Cart",
+            };
+
+            var service = new SessionService();
+            Session session = service.Create(options);
+
+            Response.Headers.Add("Location", session.Url);
+            return new StatusCodeResult(303);
         }
     }
 }
