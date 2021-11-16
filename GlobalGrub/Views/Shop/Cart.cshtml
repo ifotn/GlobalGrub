@@ -4,25 +4,29 @@
 
 <h1>Your Cart</h1>
 
-<table class="table table-striped table-hover">
-    <thead>
-        <tr>
-            <td>
-                Product
-            </td>
-            <td></td>
-            <td>
-                Quantity
-            </td>
-            <td>
-                Price
-            </td>
-            <td></td>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
+@if (Model.Count() > 0)
+{
+    var total = 0.0;
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <td>
+                    Product
+                </td>
+                <td></td>
+                <td>
+                    Quantity
+                </td>
+                <td>
+                    Price
+                </td>
+                <td></td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
             {
+                total += (item.Price * item.Quantity);
                 <tr>
                     <td>
                         @item.Product.Name
@@ -51,5 +55,19 @@
                     </td>
                 </tr>
             }
-    </tbody>
-</table> 
+            <tr>
+                <td></td>
+                <td></td>
+                <td><a asp-action="Index" class="btn btn-primary">Keep Shopping</a></td>
+                <td>@String.Format("{0:c}", total)</td>
+                <td><a asp-action="Checkout" class="btn btn-primary">Checkout</a></td>
+            </tr>
+        </tbody>
+    </table>
+}
+else
+{
+    <h2>You need some Food!</h2>
+    <a class="btn btn-primary" asp-action="Index">Shop Now</a>
+}
+

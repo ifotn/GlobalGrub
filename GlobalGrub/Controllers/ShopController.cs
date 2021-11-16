@@ -1,5 +1,6 @@
 ﻿using GlobalGrub.Data;
 using GlobalGrub.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -132,6 +133,13 @@ namespace GlobalGrub.Controllers
             _context.CartItems.Remove(cartItem);
             _context.SaveChanges();
             return RedirectToAction("Cart");
+        }
+
+        // GET: /Shop/Checkout
+        [Authorize]
+        public IActionResult Checkout()
+        {
+            return View();
         }
     }
 }
