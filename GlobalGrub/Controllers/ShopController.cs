@@ -123,7 +123,7 @@ namespace GlobalGrub.Controllers
         public IActionResult Cart()
         {
             // identity the user from the session var
-            var userId = HttpContext.Session.GetString("UserId");
+            var userId = GetUserId();
 
             // load the cart items for this user from the db for display
             var cartItems = _context.CartItems
@@ -192,10 +192,16 @@ namespace GlobalGrub.Controllers
                 {
                   new SessionLineItemOptions
                   {
-                    // Provide the exact Price ID (e.g. pr_1234) of the product you want to sell in CENTS
-                    Price = (order.Total * 100).ToString(),
-                    Quantity = 1,
-                    Description = "GlobalGrub Purchase"
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                        UnitAmount = ((long?)(order.Total * 100)),
+                        Currency = "cad",
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        {
+                            Name = "GlobalGrub Purchase"
+                        },
+                    },
+                    Quantity = 1
                   },
                 },
                 PaymentMethodTypes = new List<string>
@@ -212,6 +218,42 @@ namespace GlobalGrub.Controllers
 
             Response.Headers.Add("Location", session.Url);
             return new StatusCodeResult(303);
+        }
+
+        // GET: /Shop/SaveOrder
+        [Authorize]
+        public IActionResult SaveOrder()
+        {
+            // save order to db
+            var order = HttpContext.Session.GetObject<Models.Order>("Order");
+            _context.Orders.Add(order);
+            _context.SaveChanges();
+
+            // save order items
+            var cartItems = _context.CartItems.Where(c => c.UserId == order.UserId);
+
+            foreach (var item in cartItems)
+            {
+                var orderItem = new Models.OrderItem
+                {
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    Price = item.Price,
+                    OrderId = order.OrderId
+                };
+                _context.OrderItems.Add(orderItem);
+            }
+            _context.SaveChanges();
+
+            // clear the cart
+            foreach (var item in cartItems)
+            {
+                _context.CartItems.Remove(item);
+            }
+            _context.SaveChanges();
+
+            // redirect to order details page
+            return RedirectToAction("Details", "Orders", new { @id = order.OrderId });
         }
     }
 }
