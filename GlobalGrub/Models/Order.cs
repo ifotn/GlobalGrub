@@ -16,12 +16,15 @@ namespace GlobalGrub.Models
         public double Total { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Please make sure the order date was entered.")]
+        [Display(Name = "Order Date")]
         public DateTime OrderDate { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Please make sure a first name was entered.")]
+        [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Please make sure a last name was entered.")]
+        [Display(Name = "Last Name")]
         public string LastName { get; set; }        
         
         [Required(AllowEmptyStrings = false, ErrorMessage = "Please the address was entered.")]
@@ -38,6 +41,7 @@ namespace GlobalGrub.Models
         public string Province { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Please make sure the postal code was entered.")]
+        [Display(Name = "Postal Code")]
         public string PostalCode { get; set; }
 
         [Required]
