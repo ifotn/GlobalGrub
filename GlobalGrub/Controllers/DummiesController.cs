@@ -10,7 +10,9 @@ namespace GlobalGrub.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            // put a var in ViewData (similar to ViewBag)
+            ViewData["Message"] = "This is a viewdata message";
+            return View("Index");
         }
     }
 }
