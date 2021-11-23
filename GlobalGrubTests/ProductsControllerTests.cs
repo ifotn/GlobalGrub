@@ -76,6 +76,8 @@ namespace GlobalGrubTests
             controller = new ProductsController(_context);
         }
 
+        #region Index
+
         [TestMethod]
         public void IndexLoadsIndexView()
         {
@@ -98,5 +100,53 @@ namespace GlobalGrubTests
             // assert
             CollectionAssert.AreEqual(products.OrderBy(p => p.Name).ToList(), model);
         }
+
+        #endregion
+
+        #region Details
+
+        [TestMethod]
+        public void DetailsNullIdLoads404()
+        {
+            // act
+            var result = (ViewResult)controller.Details(null).Result;
+
+            // assert
+            Assert.AreEqual("404", result.ViewName);
+        }
+
+        [TestMethod]
+        public void DetailsInvalidIdLoads404()
+        {
+            // act
+            var result = (ViewResult)controller.Details(1001).Result;
+
+            // assert
+            Assert.AreEqual("404", result.ViewName);
+        }
+
+        [TestMethod]
+        public void DetailsValidIdLoadsProduct()
+        {
+            // act
+            var result = (ViewResult)controller.Details(924).Result;
+
+            // assert
+            Assert.AreEqual(products[1], result.Model);
+        }
+
+        [TestMethod]
+        public void DetailsValidIdLoadsView()
+        {
+            // act
+            var result = (ViewResult)controller.Details(924).Result;
+
+            // assert
+            Assert.AreEqual("Details", result.ViewName);
+        }
+
+        #endregion
+
+
     }
 }

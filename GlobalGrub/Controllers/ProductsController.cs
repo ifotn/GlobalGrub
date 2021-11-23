@@ -35,7 +35,7 @@ namespace GlobalGrub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return View("404");
             }
 
             var product = await _context.Products
@@ -43,10 +43,10 @@ namespace GlobalGrub.Controllers
                 .FirstOrDefaultAsync(m => m.ProductId == id);
             if (product == null)
             {
-                return NotFound();
+                return View("404");
             }
 
-            return View(product);
+            return View("Details", product);
         }
 
         // GET: Products/Create
