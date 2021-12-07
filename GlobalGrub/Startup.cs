@@ -66,6 +66,9 @@ namespace GlobalGrub
 
             // add dependency so controllers can read config values - used for Stripe keys in Shop
             services.AddSingleton<IConfiguration>(Configuration);
+
+            // swagger for api docs
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -99,6 +102,13 @@ namespace GlobalGrub
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
+            });
+
+            // when app starts, use Swagger to inspect any API controllers and generate new documentation file
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Global Grub API");
             });
         }
     }

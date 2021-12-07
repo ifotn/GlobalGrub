@@ -25,7 +25,7 @@ namespace GlobalGrub.Controllers.api
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
-            return await _context.Products.ToListAsync();
+            return await _context.Products.OrderBy(p => p.Name).ToListAsync();
         }
 
         // GET: api/Products/5
